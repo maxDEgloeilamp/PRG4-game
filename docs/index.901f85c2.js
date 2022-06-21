@@ -37138,27 +37138,7 @@ module.exports = require('./helpers/bundle-url').getBundleURL('emE5o') + "water.
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "Fish", ()=>Fish
-) // import * as PIXI from "pixi.js";
- // export class Fish extends PIXI.Sprite {
- //   constructor(texture: PIXI.Texture) {
- //     super(texture);
- //     this.x = Math.random() * this.pixi.screen.right;
- //     this.y = Math.random() * this.pixi.screen.bottom;
- //     //fish.rotation = 0.3
- //     this.fish.anchor.set(0.5);
- //     this.fish.scale.set(1);
- //     window.addEventListener("keydown", (e: KeyboardEvent) => this.onKeyDown(e));
- //     window.addEventListener("keyup", (e: KeyboardEvent) => this.onKeyUp(e));
- //   }
- //   onKeyDown(e: KeyboardEvent): any {
- //     console.log(e.key);
- //     if (e.key == "ArrowRight") {
- //       this.x += 3;
- //     }
- //   }
- //   onKeyUp(e: KeyboardEvent): any {}
- // }
-;
+);
 var _pixiJs = require("pixi.js");
 class Fish extends _pixiJs.Sprite {
     speed = 0;
@@ -37192,7 +37172,7 @@ class Fish extends _pixiJs.Sprite {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "Shark", ()=>Shark
-) //Improved movement
+) // Improved movement
  // onKeyDown(e: KeyboardEvent): void {
  //     switch (e.key.toUpperCase()) {
  //             break;
@@ -37211,24 +37191,6 @@ parcelHelpers.export(exports, "Shark", ()=>Shark
  //         case "S":
  //         case "ARROWDOWN":
  //             this.yspeed = 7
- //             break
- //     }
- // }
- // private onKeyUp(e: KeyboardEvent): void {
- //     switch (e.key.toUpperCase()) {
- //         case " ":
- //             break;
- //         case "A":
- //         case "D":
- //         case "ARROWLEFT":
- //         case "ARROWRIGHT":
- //             this.xspeed = 0
- //             break
- //         case "W":
- //         case "S":
- //         case "ARROWUP":
- //         case "ARROWDOWN":
- //             this.yspeed = 0
  //             break
  //     }
  // }
@@ -37255,10 +37217,28 @@ class Shark extends _pixiJs.Sprite {
         if (e.key === "ArrowLeft") this.speedX = -5;
         if (e.key === "ArrowRight") this.speedX = 5;
     }
+    // onKeyUp(e: KeyboardEvent): any {
+    //   if (e.key === "ArrowUp" || e.key === "ArrowDown" || e.key === "ArrowLeft" || e.key === "ArrowRight") {
+    //     this.speedY = 0;
+    //     this.speedX = 0;
+    //   }
+    // }
     onKeyUp(e) {
-        if (e.key === "ArrowUp" || e.key === "ArrowDown" || e.key === "ArrowLeft" || e.key === "ArrowRight") {
-            this.speedY = 0;
-            this.speedX = 0;
+        switch(e.key.toUpperCase()){
+            case " ":
+                break;
+            case "A":
+            case "D":
+            case "ARROWLEFT":
+            case "ARROWRIGHT":
+                this.speedX = 0;
+                break;
+            case "W":
+            case "S":
+            case "ARROWUP":
+            case "ARROWDOWN":
+                this.speedY = 0;
+                break;
         }
     }
     update() {

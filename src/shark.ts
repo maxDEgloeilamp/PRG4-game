@@ -30,23 +30,41 @@ export class Shark extends PIXI.Sprite {
       if (e.key === "ArrowRight") {
         this.speedX = 5;
       }
-  }
-  onKeyUp(e: KeyboardEvent): any {
-    if (e.key === "ArrowUp" || e.key === "ArrowDown" || e.key === "ArrowLeft" || e.key === "ArrowRight") {
-      this.speedY = 0;
-      this.speedX = 0;
     }
-  }
-
-
-
-  public update() {
-    this.x += this.speedX;
-    this.y += this.speedY;
-
-    this.keepInScreen();
-  }
-
+    // onKeyUp(e: KeyboardEvent): any {
+    //   if (e.key === "ArrowUp" || e.key === "ArrowDown" || e.key === "ArrowLeft" || e.key === "ArrowRight") {
+    //     this.speedY = 0;
+    //     this.speedX = 0;
+    //   }
+    // }
+    private onKeyUp(e: KeyboardEvent): void {
+        switch (e.key.toUpperCase()) {
+            case " ":
+                break;
+            case "A":
+            case "D":
+            case "ARROWLEFT":
+            case "ARROWRIGHT":
+                this.speedX = 0
+                break
+            case "W":
+            case "S":
+            case "ARROWUP":
+            case "ARROWDOWN":
+                this.speedY = 0
+                break
+        }
+    }
+    
+    
+    
+    public update() {
+      this.x += this.speedX;
+      this.y += this.speedY;
+      
+      this.keepInScreen();
+    }
+    
   private keepInScreen() {
     if (this.getBounds().right < this.game.pixi.screen.left) {
       this.x = this.game.pixi.screen.right;
@@ -59,7 +77,7 @@ export class Shark extends PIXI.Sprite {
 
 
 
-//Improved movement
+// Improved movement
     // onKeyDown(e: KeyboardEvent): void {
     //     switch (e.key.toUpperCase()) {
 
@@ -83,21 +101,3 @@ export class Shark extends PIXI.Sprite {
     //     }
     // }
 
-    // private onKeyUp(e: KeyboardEvent): void {
-    //     switch (e.key.toUpperCase()) {
-    //         case " ":
-    //             break;
-    //         case "A":
-    //         case "D":
-    //         case "ARROWLEFT":
-    //         case "ARROWRIGHT":
-    //             this.xspeed = 0
-    //             break
-    //         case "W":
-    //         case "S":
-    //         case "ARROWUP":
-    //         case "ARROWDOWN":
-    //             this.yspeed = 0
-    //             break
-    //     }
-    // }
