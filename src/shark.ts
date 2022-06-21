@@ -2,7 +2,8 @@ import * as PIXI from "pixi.js";
 import { Game } from "./game";
 
 export class Shark extends PIXI.Sprite {
-  private speed: number = 0;
+  private speedY: number = 0;
+  private speedX: number = 0;
   private game: Game;
   constructor(texture: PIXI.Texture, game: Game) {
     super(texture);
@@ -18,21 +19,30 @@ export class Shark extends PIXI.Sprite {
 
   onKeyDown(e: KeyboardEvent): any {
     if (e.key === "ArrowUp") {
-      this.speed = -5;
+      this.speedY = -5;
     }
     if (e.key === "ArrowDown") {
-      this.speed = 5;
+      this.speedY = 5;
     }
+    if (e.key === "ArrowLeft") {
+        this.speedX = -5;
+      }
+      if (e.key === "ArrowRight") {
+        this.speedX = 5;
+      }
   }
   onKeyUp(e: KeyboardEvent): any {
-    if (e.key === "ArrowUp" || e.key === "ArrowDown") {
-      this.speed = 0;
+    if (e.key === "ArrowUp" || e.key === "ArrowDown" || e.key === "ArrowLeft" || e.key === "ArrowRight") {
+      this.speedY = 0;
+      this.speedX = 0;
     }
   }
 
+
+
   public update() {
-    this.x -= 4;
-    this.y += this.speed;
+    this.x += this.speedX;
+    this.y += this.speedY;
 
     this.keepInScreen();
   }
@@ -43,3 +53,51 @@ export class Shark extends PIXI.Sprite {
     }
   }
 }
+
+
+
+
+
+
+//Improved movement
+    // onKeyDown(e: KeyboardEvent): void {
+    //     switch (e.key.toUpperCase()) {
+
+    //             break;
+    //         case "A":
+    //         case "ARROWLEFT":
+    //             this.xspeed = -7
+    //             break
+    //         case "D":
+    //         case "ARROWRIGHT":
+    //             this.xspeed = 7
+    //             break
+    //         case "W":
+    //         case "ARROWUP":
+    //             this.yspeed = -7
+    //             break
+    //         case "S":
+    //         case "ARROWDOWN":
+    //             this.yspeed = 7
+    //             break
+    //     }
+    // }
+
+    // private onKeyUp(e: KeyboardEvent): void {
+    //     switch (e.key.toUpperCase()) {
+    //         case " ":
+    //             break;
+    //         case "A":
+    //         case "D":
+    //         case "ARROWLEFT":
+    //         case "ARROWRIGHT":
+    //             this.xspeed = 0
+    //             break
+    //         case "W":
+    //         case "S":
+    //         case "ARROWUP":
+    //         case "ARROWDOWN":
+    //             this.yspeed = 0
+    //             break
+    //     }
+    // }

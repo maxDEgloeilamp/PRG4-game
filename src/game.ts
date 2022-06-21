@@ -1,15 +1,15 @@
 import * as PIXI from "pixi.js";
 import fishImage from "./images/fish.png";
-import bubbleImage from "./images/bubble.png";
 import waterImage from "./images/water.jpg";
-import sharkImage from "./images/shark.png"
+import sharkImage from "./images/shark.png";
 import { Fish } from "./fish";
 import { Shark } from "./shark";
 
 export class Game {
   pixi: PIXI.Application;
   fishes: Fish[] = [];
-  loader;
+  loader: PIXI.Loader;
+  shark: Shark;
   constructor() {
     console.log("Game created");
     //
@@ -18,6 +18,7 @@ export class Game {
     this.pixi = new PIXI.Application({
       width: window.innerWidth,
       height: window.innerHeight,
+      forceCanvas: true,
     });
     document.body.appendChild(this.pixi.view);
 
@@ -27,16 +28,15 @@ export class Game {
     this.loader = new PIXI.Loader();
     this.loader
       .add("fishTexture", fishImage)
-      .add("bubbleTexture", bubbleImage)
       .add("waterTexture", waterImage)
-      .add("sharkTexture", );
+      .add("sharkTexture", sharkImage);
     this.loader.load(() => this.loadCompleted());
   }
   //
   // STAP 3 - maak een sprite als de afbeeldingen zijn geladen
   //
   loadCompleted() {
-    
+    // first load background
     let background = new PIXI.Sprite(
       this.loader.resources["waterTexture"].texture!
     );
@@ -46,30 +46,52 @@ export class Game {
     );
     this.pixi.stage.addChild(background);
 
-    for (let i = 0; i < 100; i++) {
+    for (let i = 0; i < 10; i++) {
       let fish = new Fish(this.loader.resources["fishTexture"].texture!, this);
       this.fishes.push(fish);
       this.pixi.stage.addChild(fish);
     }
 
-    //create shark
-    new Shark()
+    // create Shark
+    this.shark = new Shark(
+      this.loader.resources["sharkTexture"].texture!,
+      this
+    );
+    this.pixi.stage.addChild(this.shark);
 
     this.pixi.ticker.add((delta: number) => this.update(delta));
   }
   update(delta: number) {
+    this.shark.update();
+
     for (const fish of this.fishes) {
       fish.update(delta);
+      for (const fish2 of this.fishes) {
+        if (fish != fish2) {
+          // if (this.collision(fish, fish2)) {
+          //   fish.tint = 0xff0000;
+          // }
+        }
+      }
+
+      if (this.collision(this.shark, fish)) {
+        // console.log("SHARK ATTACK!!!!");
+        this.pixi.stage.removeChild(fish);
+      }
     }
-    console.log(this.pixi.stage.children.length);
-    if (this.pixi.stage.children.length === 0) {
+    // when the shark is the only survivor
+    if (
+      this.pixi.stage.children.filter((object) => object instanceof Fish)
+        .length === 0
+    ) {
       console.log("YOU WIN");
       let text = new PIXI.Text("You WIN!!", { fill: ["#ffffff"] });
-      text.x = 200;
-      text.y = 200;
+      text.x = this.pixi.screen.width / 2;
+      text.y = this.pixi.screen.height / 2;
       this.pixi.stage.addChild(text);
     }
   }
+
   collision(sprite1: PIXI.Sprite, sprite2: PIXI.Sprite) {
     const bounds1 = sprite1.getBounds();
     const bounds2 = sprite2.getBounds();
@@ -84,4 +106,3 @@ export class Game {
 }
 
 new Game();
-

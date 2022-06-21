@@ -521,10 +521,10 @@ parcelHelpers.export(exports, "Game", ()=>Game
 var _pixiJs = require("pixi.js");
 var _fishPng = require("./images/fish.png");
 var _fishPngDefault = parcelHelpers.interopDefault(_fishPng);
-var _bubblePng = require("./images/bubble.png");
-var _bubblePngDefault = parcelHelpers.interopDefault(_bubblePng);
 var _waterJpg = require("./images/water.jpg");
 var _waterJpgDefault = parcelHelpers.interopDefault(_waterJpg);
+var _sharkPng = require("./images/shark.png");
+var _sharkPngDefault = parcelHelpers.interopDefault(_sharkPng);
 var _fish = require("./fish");
 var _shark = require("./shark");
 class Game {
@@ -536,14 +536,15 @@ class Game {
         //
         this.pixi = new _pixiJs.Application({
             width: window.innerWidth,
-            height: window.innerHeight
+            height: window.innerHeight,
+            forceCanvas: true
         });
         document.body.appendChild(this.pixi.view);
         //
         // STAP 2 - preload alle afbeeldingen
         //
         this.loader = new _pixiJs.Loader();
-        this.loader.add("fishTexture", _fishPngDefault.default).add("bubbleTexture", _bubblePngDefault.default).add("waterTexture", _waterJpgDefault.default).add("sharkTexture");
+        this.loader.add("fishTexture", _fishPngDefault.default).add("waterTexture", _waterJpgDefault.default).add("sharkTexture", _sharkPngDefault.default);
         this.loader.load(()=>this.loadCompleted()
         );
     }
@@ -555,29 +556,36 @@ class Game {
         let background = new _pixiJs.Sprite(this.loader.resources["waterTexture"].texture);
         background.scale.set(window.innerWidth / background.getBounds().width, window.innerHeight / background.getBounds().height);
         this.pixi.stage.addChild(background);
-        //load fish
         for(let i = 0; i < 10; i++){
             let fish = new _fish.Fish(this.loader.resources["fishTexture"].texture, this);
             this.fishes.push(fish);
             this.pixi.stage.addChild(fish);
         }
-        //create shark
-        new _shark.Shark();
+        // create Shark
+        this.shark = new _shark.Shark(this.loader.resources["sharkTexture"].texture, this);
+        this.pixi.stage.addChild(this.shark);
         this.pixi.ticker.add((delta)=>this.update(delta)
         );
     }
     update(delta) {
-        for (const fish of this.fishes)fish.update(delta);
-        console.log(this.pixi.stage.children.length);
-        if (this.pixi.stage.children.length === 0) {
+        this.shark.update();
+        for (const fish of this.fishes){
+            fish.update(delta);
+            for (const fish2 of this.fishes);
+            if (this.collision(this.shark, fish)) // console.log("SHARK ATTACK!!!!");
+            this.pixi.stage.removeChild(fish);
+        }
+        // when the shark is the only survivor
+        if (this.pixi.stage.children.filter((object)=>object instanceof _fish.Fish
+        ).length === 0) {
             console.log("YOU WIN");
             let text = new _pixiJs.Text("You WIN!!", {
                 fill: [
                     "#ffffff"
                 ]
             });
-            text.x = 200;
-            text.y = 200;
+            text.x = this.pixi.screen.width / 2;
+            text.y = this.pixi.screen.height / 2;
             this.pixi.stage.addChild(text);
         }
     }
@@ -589,7 +597,7 @@ class Game {
 }
 new Game();
 
-},{"pixi.js":"dsYej","./images/fish.png":"3tLwD","./images/water.jpg":"jj9Eg","./fish":"7VsCH","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","./shark":"kN3uI","./images/bubble.png":"iMP3P"}],"dsYej":[function(require,module,exports) {
+},{"pixi.js":"dsYej","./images/fish.png":"3tLwD","./images/water.jpg":"jj9Eg","./fish":"7VsCH","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","./shark":"kN3uI","./images/shark.png":"7HgQx"}],"dsYej":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "utils", ()=>_utils
@@ -37184,21 +37192,87 @@ class Fish extends _pixiJs.Sprite {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "Shark", ()=>Shark
-);
+) //Improved movement
+ // onKeyDown(e: KeyboardEvent): void {
+ //     switch (e.key.toUpperCase()) {
+ //             break;
+ //         case "A":
+ //         case "ARROWLEFT":
+ //             this.xspeed = -7
+ //             break
+ //         case "D":
+ //         case "ARROWRIGHT":
+ //             this.xspeed = 7
+ //             break
+ //         case "W":
+ //         case "ARROWUP":
+ //             this.yspeed = -7
+ //             break
+ //         case "S":
+ //         case "ARROWDOWN":
+ //             this.yspeed = 7
+ //             break
+ //     }
+ // }
+ // private onKeyUp(e: KeyboardEvent): void {
+ //     switch (e.key.toUpperCase()) {
+ //         case " ":
+ //             break;
+ //         case "A":
+ //         case "D":
+ //         case "ARROWLEFT":
+ //         case "ARROWRIGHT":
+ //             this.xspeed = 0
+ //             break
+ //         case "W":
+ //         case "S":
+ //         case "ARROWUP":
+ //         case "ARROWDOWN":
+ //             this.yspeed = 0
+ //             break
+ //     }
+ // }
+;
 var _pixiJs = require("pixi.js");
 class Shark extends _pixiJs.Sprite {
-    constructor(texture){
+    speedY = 0;
+    speedX = 0;
+    constructor(texture, game){
         super(texture);
-        this.x = 300;
-        this.y = 700;
+        this.game = game;
+        console.log("shark created");
+        this.x = game.pixi.screen.width - this.getBounds().width;
+        this.y = Math.random() * game.pixi.screen.height;
+        this.scale.set(-1, 1);
+        window.addEventListener("keydown", (e)=>this.onKeyDown(e)
+        );
+        window.addEventListener("keyup", (e)=>this.onKeyUp(e)
+        );
+    }
+    onKeyDown(e) {
+        if (e.key === "ArrowUp") this.speedY = -5;
+        if (e.key === "ArrowDown") this.speedY = 5;
+        if (e.key === "ArrowLeft") this.speedX = -5;
+        if (e.key === "ArrowRight") this.speedX = 5;
+    }
+    onKeyUp(e) {
+        if (e.key === "ArrowUp" || e.key === "ArrowDown" || e.key === "ArrowLeft" || e.key === "ArrowRight") {
+            this.speedY = 0;
+            this.speedX = 0;
+        }
     }
     update() {
-        this.x -= 3;
+        this.x += this.speedX;
+        this.y += this.speedY;
+        this.keepInScreen();
+    }
+    keepInScreen() {
+        if (this.getBounds().right < this.game.pixi.screen.left) this.x = this.game.pixi.screen.right;
     }
 }
 
-},{"pixi.js":"dsYej","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"iMP3P":[function(require,module,exports) {
-module.exports = require('./helpers/bundle-url').getBundleURL('emE5o') + "bubble.56ab0ad6.png" + "?" + Date.now();
+},{"pixi.js":"dsYej","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"7HgQx":[function(require,module,exports) {
+module.exports = require('./helpers/bundle-url').getBundleURL('emE5o') + "shark.29daeb95.png" + "?" + Date.now();
 
 },{"./helpers/bundle-url":"lgJ39"}]},["fpRtI","edeGs"], "edeGs", "parcelRequirea0e5")
 
