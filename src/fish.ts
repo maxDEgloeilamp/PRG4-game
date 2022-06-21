@@ -38,27 +38,3 @@ export class Fish extends PIXI.Sprite {
     }
   }
 }
-
-// import * as PIXI from "pixi.js";
-
-// export class Fish extends PIXI.Sprite {
-//   constructor(texture: PIXI.Texture) {
-//     super(texture);
-
-//     this.x = Math.random() * this.pixi.screen.right;
-//     this.y = Math.random() * this.pixi.screen.bottom;
-//     //fish.rotation = 0.3
-//     this.fish.anchor.set(0.5);
-//     this.fish.scale.set(1);
-//     window.addEventListener("keydown", (e: KeyboardEvent) => this.onKeyDown(e));
-//     window.addEventListener("keyup", (e: KeyboardEvent) => this.onKeyUp(e));
-//   }
-
-//   onKeyDown(e: KeyboardEvent): any {
-//     console.log(e.key);
-//     if (e.key == "ArrowRight") {
-//       this.x += 3;
-//     }
-//   }
-//   onKeyUp(e: KeyboardEvent): any {}
-// }
